@@ -3,535 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>小猪养成记 - 节奏版</title>
+    <title>小猪养成记 - 节奏版 v4</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
-        
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .game-container {
-            max-width: 480px;
-            margin: 0 auto;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-        }
-        
-        /* 顶部状态栏 */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #fff;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        html, body { height: 100%; overflow: hidden; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .game-container { max-width: 480px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; padding: 10px; }
+        .status-bar { display: flex; justify-content: space-between; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 15px; margin-bottom: 10px; font-size: 14px; }
+        .status-item { display: flex; align-items: center; gap: 5px; color: #fff; }
         .coins { color: #FFD700; font-weight: bold; font-size: 16px; }
-        
-        /* 属性面板 */
-        .stats-panel {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .stat-box {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 8px;
-            text-align: center;
-            color: #fff;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-bottom: 3px;
-        }
-        
-        .stat-value {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
+        .stats-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .stat-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 10px; padding: 8px; text-align: center; color: #fff; }
+        .stat-label { font-size: 11px; opacity: 0.8; margin-bottom: 3px; }
+        .stat-value { font-size: 16px; font-weight: bold; }
         .taste-excellent { color: #FFD700; text-shadow: 0 0 10px #FFD700; }
         .taste-good { color: #90EE90; }
         .taste-normal { color: #FFF; }
         .taste-bad { color: #FFA07A; }
         .taste-terrible { color: #FF6B6B; }
-        
-        /* 小猪区域 */
-        .pig-section {
-            flex: 1;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 10px;
-        }
-        
-        .pig-stage {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: #fff;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .pig-avatar {
-            font-size: 100px;
-            animation: breathe 2s infinite;
-            cursor: pointer;
-            transition: transform 0.1s;
-            user-select: none;
-        }
-        
-        .pig-avatar:active {
-            transform: scale(0.9);
-        }
-        
-        .pig-avatar.golden {
-            filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500);
-            animation: golden-glow 1s infinite alternate;
-        }
-        
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        @keyframes golden-glow {
-            from { filter: drop-shadow(0 0 20px #FFD700); }
-            to { filter: drop-shadow(0 0 40px #FFD700) drop-shadow(0 0 60px #FFA500); }
-        }
-        
-        .pig-avatar.dead {
-            filter: grayscale(100%) brightness(0.3);
-            animation: none;
-        }
-        
-        /* 节奏条 */
-        .rhythm-bar {
-            width: 90%;
-            height: 60px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            margin-top: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .rhythm-track {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        .target-zone {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 50px;
-            background: rgba(255,255,255,0.3);
-            border: 3px solid #fff;
-            border-radius: 8px;
-        }
-        
-        .target-zone.perfect {
-            background: rgba(255,215,0,0.5);
-            border-color: #FFD700;
-            box-shadow: 0 0 20px #FFD700;
-        }
-        
-        .feed-note {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: left 0.1s linear;
-        }
-        
-        /* 饲料选择区 */
-        .feed-selection {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .feed-btn {
-            border: none;
-            border-radius: 12px;
-            padding: 12px 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            color: #fff;
-            position: relative;
-        }
-        
-        .feed-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .feed-btn.selected {
-            box-shadow: 0 0 0 3px #fff, 0 0 20px rgba(255,255,255,0.5);
-        }
-        
-        .feed-btn .emoji {
-            font-size: 28px;
-        }
-        
-        .feed-btn .name {
-            font-size: 11px;
-            font-weight: bold;
-        }
-        
-        .feed-btn .cost {
-            font-size: 10px;
-            opacity: 0.9;
-        }
-        
-        .feed-black { background: linear-gradient(135deg, #2c3e50 0%, #4a4a4a 100%); }
-        .feed-normal { background: linear-gradient(135deg, #8e9eab 0%, #5c6b73 100%); }
-        .feed-advanced { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
-        .feed-luxury { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        
-        /* 喂食按钮 */
-        .feed-action {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            transition: all 0.1s;
-        }
-        
-        .feed-action:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .feed-action.perfect {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            box-shadow: 0 0 30px #FFD700;
-        }
-        
-        /* 日志 */
-        .log-area {
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 10px 15px;
-            color: #fff;
-            font-size: 12px;
-            height: 70px;
-            overflow-y: auto;
-        }
-        
-        .log-item {
-            margin-bottom: 3px;
-            opacity: 0.9;
-        }
-        
-        .log-item:last-child {
-            opacity: 1;
-            font-weight: bold;
-        }
-        
+        .pig-section { flex: 1; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; min-height: 0; }
+        .pig-stage { position: absolute; top: 10px; right: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; padding: 5px 15px; border-radius: 15px; font-size: 14px; font-weight: bold; }
+        .pig-avatar { font-size: 100px; animation: breathe 2s infinite; cursor: pointer; transition: transform 0.1s; user-select: none; position: relative; }
+        .pig-avatar:active { transform: scale(0.9); }
+        .pig-avatar.golden { filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500); animation: golden-glow 1s infinite alternate; }
+        .pig-avatar.eating { animation: eat-animation 0.5s ease-out; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes golden-glow { from { filter: drop-shadow(0 0 20px #FFD700); } to { filter: drop-shadow(0 0 40px #FFD700) drop-shadow(0 0 60px #FFA500); } }
+        @keyframes eat-animation { 0% { transform: scale(1); } 25% { transform: scale(1.2) rotate(-5deg); } 50% { transform: scale(1.1) rotate(5deg); } 75% { transform: scale(1.15) rotate(-3deg); } 100% { transform: scale(1); } }
+        .pig-avatar.dead { filter: grayscale(100%) brightness(0.3); animation: none; }
+        .rhythm-container { width: 95%; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .rhythm-row { height: 55px; background: rgba(0,0,0,0.3); border-radius: 10px; position: relative; overflow: hidden; }
+        .rhythm-track { width: 100%; height: 100%; position: relative; }
+        .target-zone { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 80px; height: 45px; background: rgba(255,255,255,0.2); border: 3px solid #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+        .target-zone.perfect { background: rgba(255,215,0,0.4); border-color: #FFD700; box-shadow: 0 0 25px #FFD700; }
+        .feed-note { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: transform 0.1s; user-select: none; z-index: 10; }
+        .feed-note:active { transform: translateY(-50%) scale(0.9); }
+        .feed-note.clicked { animation: feed-click 0.3s ease-out; }
+        @keyframes feed-click { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.3); } 100% { transform: translateY(-50%) scale(0); opacity: 0; } }
+        .feed-legend { display: flex; justify-content: center; gap: 15px; margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.8); }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-emoji { font-size: 16px; }
+        .log-area { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px 15px; color: #fff; font-size: 12px; height: 60px; overflow-y: auto; margin-top: 10px; }
+        .log-item { margin-bottom: 3px; opacity: 0.9; }
+        .log-item:last-child { opacity: 1; font-weight: bold; }
         .log-golden { color: #FFD700; text-shadow: 0 0 5px #FFD700; }
         .log-dead { color: #FF6B6B; }
         .log-perfect { color: #90EE90; }
-        
-        /* 结算面板 */
-        .result-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .result-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            color: #fff;
-            max-width: 350px;
-            width: 90%;
-        }
-        
-        .result-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        
-        .result-pig {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        
-        .result-stats {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .result-stat {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .result-price {
-            font-size: 32px;
-            color: #FFD700;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        
-        .restart-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 15px 30px;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        /* 连击显示 */
-        .combo-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 48px;
-            font-weight: bold;
-            color: #FFD700;
-            text-shadow: 0 0 20px #FFD700;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .combo-display.show {
-            animation: combo-pop 0.5s ease-out;
-        }
-        
-        @keyframes combo-pop {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
-        }
+        .result-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .result-content { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; text-align: center; color: #fff; max-width: 350px; width: 90%; }
+        .result-title { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+        .result-pig { font-size: 80px; margin-bottom: 20px; }
+        .result-stats { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .result-stat { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .result-price { font-size: 32px; color: #FFD700; font-weight: bold; margin-bottom: 20px; }
+        .restart-btn { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; border-radius: 10px; padding: 15px 30px; color: #fff; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .combo-display { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; color: #FFD700; text-shadow: 0 0 20px #FFD700; opacity: 0; pointer-events: none; }
+        .combo-display.show { animation: combo-pop 0.5s ease-out; }
+        @keyframes combo-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- 状态栏 -->
         <div class="status-bar">
-            <div class="status-item">
-                <span>📅</span>
-                <span id="week">第1周</span>
-            </div>
-            <div class="status-item">
-                <span>⚖️</span>
-                <span id="weight">5.0kg</span>
-            </div>
-            <div class="status-item coins">
-                <span>💰</span>
-                <span id="coins">2000</span>
-            </div>
+            <div class="status-item"><span>📅</span><span id="week">第1周</span></div>
+            <div class="status-item"><span>⚖️</span><span id="weight">5.0kg</span></div>
+            <div class="status-item coins"><span>💰</span><span id="coins">2000</span></div>
         </div>
-        
-        <!-- 属性面板 -->
         <div class="stats-panel">
-            <div class="stat-box">
-                <div class="stat-label">口感</div>
-                <div class="stat-value" id="taste">味同嚼蜡</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">健康</div>
-                <div class="stat-value" id="health">100%</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">预计价格</div>
-                <div class="stat-value" id="price">500</div>
-            </div>
+            <div class="stat-box"><div class="stat-label">口感</div><div class="stat-value" id="taste">味同嚼蜡</div></div>
+            <div class="stat-box"><div class="stat-label">健康</div><div class="stat-value" id="health">100%</div></div>
+            <div class="stat-box"><div class="stat-label">预计价格</div><div class="stat-value" id="price">500</div></div>
         </div>
-        
-        <!-- 小猪区域 -->
         <div class="pig-section">
             <div class="pig-stage" id="stage">乳猪</div>
             <div class="pig-avatar" id="pig">🐷</div>
             <div class="combo-display" id="comboDisplay"></div>
-            
-            <!-- 节奏条 -->
-            <div class="rhythm-bar">
-                <div class="rhythm-track" id="rhythmTrack">
-                    <div class="target-zone" id="targetZone"></div>
-                </div>
+            <div class="rhythm-container">
+                <div class="rhythm-row" id="row0"><div class="rhythm-track"><div class="target-zone" id="target0"></div></div></div>
+                <div class="rhythm-row" id="row1"><div class="rhythm-track"><div class="target-zone" id="target1"></div></div></div>
+                <div class="rhythm-row" id="row2"><div class="rhythm-track"><div class="target-zone" id="target2"></div></div></div>
+            </div>
+            <div class="feed-legend">
+                <div class="legend-item"><span class="legend-emoji">☠️</span><span>黑心(0元)</span></div>
+                <div class="legend-item"><span class="legend-emoji">🗑️</span><span>普通(20元)</span></div>
+                <div class="legend-item"><span class="legend-emoji">🌽</span><span>高级(50元)</span></div>
+                <div class="legend-item"><span class="legend-emoji">🐟</span><span>奢华(100元)</span></div>
             </div>
         </div>
-        
-        <!-- 饲料选择 -->
-        <div class="feed-selection">
-            <button class="feed-btn feed-black selected" data-type="0" onclick="selectFeed(0)">
-                <span class="emoji">☠️</span>
-                <span class="name">黑心</span>
-                <span class="cost">(不明物体)</span>
-            </button>
-            <button class="feed-btn feed-normal" data-type="1" onclick="selectFeed(1)">
-                <span class="emoji">🗑️</span>
-                <span class="name">普通</span>
-                <span class="cost">(厨余)</span>
-            </button>
-            <button class="feed-btn feed-advanced" data-type="2" onclick="selectFeed(2)">
-                <span class="emoji">🌽</span>
-                <span class="name">高级</span>
-                <span class="cost">(玉米豆粕)</span>
-            </button>
-            <button class="feed-btn feed-luxury" data-type="3" onclick="selectFeed(3)">
-                <span class="emoji">🐟</span>
-                <span class="name">奢华</span>
-                <span class="cost">(鱼粉)</span>
-            </button>
-        </div>
-        
-        <!-- 喂食按钮 -->
-        <button class="feed-action" id="feedBtn" onclick="feed()">🍽️ 喂食</button>
-        
-        <!-- 日志 -->
         <div class="log-area" id="log">
-            <div class="log-item">欢迎来到小猪养成记！选择饲料，把握节奏喂食吧~</div>
-            <div class="log-item">黑心饲料免费但可能变异，奢华饲料口感最佳！</div>
+            <div class="log-item">点击饲料图标进行喂食！把握时机，在热区内点击得分更高~</div>
+            <div class="log-item">三种饲料以不同速度移动，黑心饲料免费但有风险！</div>
         </div>
     </div>
-    
-    <!-- 结算面板 -->
     <div class="result-modal" id="resultModal">
         <div class="result-content">
             <div class="result-title" id="resultTitle">出栏啦！</div>
             <div class="result-pig" id="resultPig">🐷</div>
             <div class="result-stats">
-                <div class="result-stat">
-                    <span>最终体重</span>
-                    <span id="resultWeight">120kg</span>
-                </div>
-                <div class="result-stat">
-                    <span>肉质口感</span>
-                    <span id="resultTaste">鲜美多汁</span>
-                </div>
-                <div class="result-stat">
-                    <span>饲养周期</span>
-                    <span id="resultWeeks">20周</span>
-                </div>
+                <div class="result-stat"><span>最终体重</span><span id="resultWeight">120kg</span></div>
+                <div class="result-stat"><span>肉质口感</span><span id="resultTaste">鲜美多汁</span></div>
+                <div class="result-stat"><span>饲养周期</span><span id="resultWeeks">20周</span></div>
             </div>
             <div class="result-price" id="resultPrice">💰 8888</div>
             <button class="restart-btn" onclick="restart()">再养一头</button>
         </div>
     </div>
-
     <script>
-        // 饲料配置
         const FEEDS = [
-            { 
-                name: '黑心', 
-                emoji: '☠️', 
-                cost: 0, 
-                weightGain: 1, 
-                tasteGain: -5, 
-                desc: '不明物体',
-                color: '#2c3e50'
-            },
-            { 
-                name: '普通', 
-                emoji: '🗑️', 
-                cost: 20, 
-                weightGain: 2, 
-                tasteGain: 0, 
-                desc: '厨余垃圾',
-                color: '#5c6b73'
-            },
-            { 
-                name: '高级', 
-                emoji: '🌽', 
-                cost: 50, 
-                weightGain: 3, 
-                tasteGain: 3, 
-                desc: '玉米豆粕',
-                color: '#11998e'
-            },
-            { 
-                name: '奢华', 
-                emoji: '🐟', 
-                cost: 100, 
-                weightGain: 4, 
-                tasteGain: 6, 
-                desc: '鱼粉',
-                color: '#f093fb'
-            }
+            { name: '黑心', emoji: '☠️', cost: 0, weightGain: 1, tasteGain: -5, color: '#2c3e50' },
+            { name: '普通', emoji: '🗑️', cost: 20, weightGain: 2, tasteGain: 0, color: '#5c6b73' },
+            { name: '高级', emoji: '🌽', cost: 50, weightGain: 3, tasteGain: 3, color: '#11998e' },
+            { name: '奢华', emoji: '🐟', cost: 100, weightGain: 4, tasteGain: 6, color: '#f093fb' }
         ];
-        
-        // 口感等级
         const TASTE_LEVELS = [
             { min: -100, name: '味同嚼蜡', class: 'taste-terrible' },
             { min: -20, name: '难以下咽', class: 'taste-bad' },
@@ -540,357 +123,132 @@
             { min: 50, name: '肉质爽滑', class: 'taste-excellent' },
             { min: 80, name: '入口即化', class: 'taste-excellent' }
         ];
-        
-        // 游戏状态
-        let state = {
-            week: 1,
-            coins: 2000,
-            weight: 5,
-            taste: 0,
-            health: 100,
-            selectedFeed: 0,
-            combo: 0,
-            isGolden: false,
-            isDead: false
-        };
-        
-        // 节奏系统
-        let rhythmNotes = [];
-        let rhythmSpeed = 2;
+        let state = { week: 1, coins: 2000, weight: 5, taste: 0, health: 100, combo: 0, isGolden: false, isDead: false, lastStage: 0 };
+        let tracks = [
+            { notes: [], speed: 1.2, feedTypes: [0, 1] },
+            { notes: [], speed: 2.0, feedTypes: [1, 2] },
+            { notes: [], speed: 3.0, feedTypes: [2, 3] }
+        ];
         let isPlaying = true;
-        
-        // 初始化
-        function init() {
-            startRhythm();
-            updateUI();
+        function playPigSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(350, audioContext.currentTime + 0.2);
+                oscillator.frequency.exponentialRampToValueAtTime(250, audioContext.currentTime + 0.4);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.1, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } catch (e) { console.log('Audio not supported'); }
         }
-        
-        // 选择饲料
-        function selectFeed(type) {
-            if (state.isDead || state.isGolden) return;
-            state.selectedFeed = type;
-            document.querySelectorAll('.feed-btn').forEach(btn => btn.classList.remove('selected'));
-            document.querySelector(`.feed-btn[data-type="${type}"]`).classList.add('selected');
-        }
-        
-        // 更新UI
+        function init() { startRhythm(); updateUI(); }
         function updateUI() {
             document.getElementById('week').textContent = `第${state.week}周`;
             document.getElementById('weight').textContent = `${state.weight.toFixed(1)}kg`;
             document.getElementById('coins').textContent = state.coins;
             document.getElementById('health').textContent = `${state.health}%`;
-            
-            // 口感
             const tasteLevel = TASTE_LEVELS.slice().reverse().find(t => state.taste >= t.min);
             const tasteEl = document.getElementById('taste');
             tasteEl.textContent = tasteLevel.name;
             tasteEl.className = 'stat-value ' + tasteLevel.class;
-            
-            // 预计价格
-            const price = calculatePrice();
-            document.getElementById('price').textContent = price;
-            
-            // 猪的状态
+            document.getElementById('price').textContent = calculatePrice();
+            checkStageUpgrade();
             const pigEl = document.getElementById('pig');
-            if (state.isDead) {
-                pigEl.textContent = '💀';
-                pigEl.className = 'pig-avatar dead';
-            } else if (state.isGolden) {
-                pigEl.textContent = '🐷';
-                pigEl.className = 'pig-avatar golden';
-            } else {
-                pigEl.textContent = getPigEmoji();
-                pigEl.className = 'pig-avatar';
-            }
-            
-            // 阶段
+            if (state.isDead) { pigEl.textContent = '💀'; pigEl.className = 'pig-avatar dead'; }
+            else if (state.isGolden) { pigEl.textContent = '🐷'; pigEl.className = 'pig-avatar golden'; }
+            else { pigEl.textContent = getPigEmoji(); pigEl.className = 'pig-avatar'; }
             document.getElementById('stage').textContent = getStageName();
         }
-        
-        // 获取猪emoji
-        function getPigEmoji() {
-            if (state.weight < 15) return '🐷';
-            if (state.weight < 30) return '🐽';
-            if (state.weight < 60) return '🐖';
-            if (state.weight < 90) return '🐗';
-            if (state.weight < 110) return '🥓';
-            return '🍖';
+        function checkStageUpgrade() {
+            const currentStage = Math.min(6, Math.floor(state.weight / 20));
+            if (currentStage > state.lastStage) { state.lastStage = currentStage; playPigSound(); }
         }
-        
-        // 获取阶段名
-        function getStageName() {
-            if (state.weight < 15) return '乳猪';
-            if (state.weight < 30) return '幼猪';
-            if (state.weight < 60) return '小猪';
-            if (state.weight < 90) return '中猪';
-            if (state.weight < 110) return '大猪';
-            if (state.weight < 130) return '肥猪';
-            return '出栏猪';
-        }
-        
-        // 计算价格
-        function calculatePrice() {
-            if (state.isDead) return 0;
-            let basePrice = state.weight * 10;
-            let tasteBonus = Math.max(0, state.taste * 2);
-            let goldenBonus = state.isGolden ? 5 : 1;
-            return Math.floor((basePrice + tasteBonus) * goldenBonus);
-        }
-        
-        // 节奏系统
+        function getPigEmoji() { if (state.weight < 15) return '🐷'; if (state.weight < 30) return '🐽'; if (state.weight < 60) return '🐖'; if (state.weight < 90) return '🐗'; if (state.weight < 110) return '🥓'; return '🍖'; }
+        function getStageName() { if (state.weight < 15) return '乳猪'; if (state.weight < 30) return '幼猪'; if (state.weight < 60) return '小猪'; if (state.weight < 90) return '中猪'; if (state.weight < 110) return '大猪'; if (state.weight < 130) return '肥猪'; return '出栏猪'; }
+        function calculatePrice() { if (state.isDead) return 0; let basePrice = state.weight * 10; let tasteBonus = Math.max(0, state.taste * 2); let goldenBonus = state.isGolden ? 5 : 1; return Math.floor((basePrice + tasteBonus) * goldenBonus); }
         function startRhythm() {
-            setInterval(() => {
-                if (!isPlaying || state.isDead) return;
-                spawnNote();
-            }, 1500);
-            
-            setInterval(() => {
-                if (!isPlaying) return;
-                updateNotes();
-            }, 16);
+            setInterval(() => { if (!isPlaying || state.isDead) return; tracks.forEach((track, rowIndex) => { if (Math.random() < 0.4) spawnNote(rowIndex); }); }, 2000);
+            setInterval(() => { if (!isPlaying) return; updateNotes(); }, 20);
         }
-        
-        // 生成音符
-        function spawnNote() {
-            const track = document.getElementById('rhythmTrack');
+        function spawnNote(rowIndex) {
+            const track = tracks[rowIndex];
+            const rowEl = document.getElementById(`row${rowIndex}`);
+            const feedType = track.feedTypes[Math.floor(Math.random() * track.feedTypes.length)];
+            const feed = FEEDS[feedType];
             const note = document.createElement('div');
             note.className = 'feed-note';
             note.style.left = '100%';
-            note.style.background = FEEDS[state.selectedFeed].color;
-            note.textContent = FEEDS[state.selectedFeed].emoji;
-            track.appendChild(note);
-            rhythmNotes.push({ el: note, x: 100 });
+            note.style.background = feed.color;
+            note.textContent = feed.emoji;
+            note.dataset.feedType = feedType;
+            note.dataset.row = rowIndex;
+            note.addEventListener('click', (e) => { e.stopPropagation(); handleFeedClick(rowIndex, note); });
+            rowEl.querySelector('.rhythm-track').appendChild(note);
+            track.notes.push({ el: note, x: 100, feedType: feedType });
         }
-        
-        // 更新音符位置
         function updateNotes() {
-            const targetX = 50; // 目标区域中心百分比
-            
-            rhythmNotes = rhythmNotes.filter(note => {
-                note.x -= rhythmSpeed;
-                note.el.style.left = note.x + '%';
-                
-                if (note.x < -10) {
-                    note.el.remove();
-                    state.combo = 0;
-                    return false;
-                }
-                return true;
+            const targetX = 50;
+            tracks.forEach((track, rowIndex) => {
+                track.notes = track.notes.filter(note => {
+                    note.x -= track.speed;
+                    note.el.style.left = note.x + '%';
+                    const diff = Math.abs(note.x - targetX);
+                    if (diff < 12) document.getElementById(`target${rowIndex}`).classList.add('perfect');
+                    else document.getElementById(`target${rowIndex}`).classList.remove('perfect');
+                    if (note.x < -10) { note.el.remove(); state.combo = 0; return false; }
+                    return true;
+                });
             });
         }
-        
-        // 喂食
-        function feed() {
-            if (state.isDead) {
-                log('猪已经死了，请重新开始', 'dead');
-                return;
-            }
-            
-            if (state.weight >= 130) {
-                showResult();
-                return;
-            }
-            
-            const feed = FEEDS[state.selectedFeed];
-            
-            // 检查金币
-            if (state.coins < feed.cost) {
-                log('金币不足！', 'bad');
-                return;
-            }
-            
-            // 检查节奏
+        function handleFeedClick(rowIndex, noteEl) {
+            if (state.isDead) { log('猪已经死了，请重新开始', 'dead'); return; }
+            if (state.weight >= 130) { showResult(); return; }
+            const track = tracks[rowIndex];
+            const note = track.notes.find(n => n.el === noteEl);
+            if (!note) return;
+            const feed = FEEDS[note.feedType];
+            if (state.coins < feed.cost) { log('金币不足！', 'bad'); return; }
             const targetX = 50;
-            let hitNote = null;
-            let bestDiff = 100;
-            
-            rhythmNotes.forEach(note => {
-                const diff = Math.abs(note.x - targetX);
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    hitNote = note;
-                }
-            });
-            
-            if (bestDiff > 15) {
-                log('时机不对！饲料浪费了', 'bad');
-                state.coins -= feed.cost;
-                state.combo = 0;
-                updateUI();
-                return;
-            }
-            
-            // 成功喂食
+            const diff = Math.abs(note.x - targetX);
+            let accuracy = 'miss', multiplier = 0;
+            if (diff < 8) { accuracy = 'perfect'; multiplier = 2.0; state.combo++; showCombo('Perfect!'); }
+            else if (diff < 15) { accuracy = 'good'; multiplier = 1.3; state.combo = 0; }
+            else { accuracy = 'miss'; multiplier = 0.5; state.combo = 0; }
             state.coins -= feed.cost;
-            
-            // 计算准确度
-            let accuracy = 'good';
-            if (bestDiff < 5) {
-                accuracy = 'perfect';
-                state.combo++;
-            } else {
-                state.combo = 0;
-            }
-            
-            // 移除音符
-            if (hitNote) {
-                hitNote.el.remove();
-                rhythmNotes = rhythmNotes.filter(n => n !== hitNote);
-            }
-            
-            // 黑心饲料特殊效果
-            if (state.selectedFeed === 0) {
+            note.el.classList.add('clicked');
+            setTimeout(() => note.el.remove(), 300);
+            track.notes = track.notes.filter(n => n !== note);
+            if (note.feedType === 0) {
                 const rand = Math.random();
-                if (rand < 0.05) {
-                    // 5% 概率变异成黄金猪
-                    state.isGolden = true;
-                    state.weight = 200;
-                    state.taste = 100;
-                    log('🎉 基因变异！黄金猪诞生！价值翻倍！', 'golden');
-                    showCombo('黄金猪！');
-                    updateUI();
-                    setTimeout(() => showResult(), 1000);
-                    return;
-                } else if (rand < 0.15) {
-                    // 10% 概率死亡
-                    state.isDead = true;
-                    log('💀 猪吃了不明物体，毒发身亡...投资打水漂', 'dead');
-                    updateUI();
-                    setTimeout(() => showResult(), 1000);
-                    return;
-                }
+                if (rand < 0.05) { state.isGolden = true; state.weight = 200; state.taste = 100; log('🎉 基因变异！黄金猪诞生！价值翻倍！', 'golden'); showCombo('黄金猪！'); updateUI(); setTimeout(() => showResult(), 1000); return; }
+                else if (rand < 0.15) { state.isDead = true; log('💀 猪吃了不明物体，毒发身亡...投资打水漂', 'dead'); updateUI(); setTimeout(() => showResult(), 1000); return; }
             }
-            
-            // 正常喂食效果
-            let weightGain = feed.weightGain;
-            let tasteGain = feed.tasteGain;
-            
-            if (accuracy === 'perfect') {
-                weightGain *= 1.5;
-                tasteGain *= 1.5;
-                showCombo('Perfect!');
-            }
-            
-            // 连击加成
-            if (state.combo > 5) {
-                weightGain *= (1 + state.combo * 0.05);
-                tasteGain *= (1 + state.combo * 0.05);
-            }
-            
+            let weightGain = feed.weightGain * multiplier;
+            let tasteGain = feed.tasteGain * multiplier;
+            if (state.combo > 3) { weightGain *= (1 + state.combo * 0.1); tasteGain *= (1 + state.combo * 0.1); }
             state.weight += weightGain;
             state.taste += tasteGain;
             state.health = Math.min(100, state.health + 2);
-            
-            // 每周推进
             state.week++;
-            
-            // 自然消耗
             state.taste -= 0.5;
-            
-            // 检查出栏
-            if (state.weight >= 130 && !state.isGolden) {
-                log('🎉 猪已长成，可以出栏了！', 'good');
-            }
-            
-            const msg = accuracy === 'perfect' 
-                ? `Perfect! 喂食成功！体重+${weightGain.toFixed(1)}kg` 
-                : `喂食成功！体重+${weightGain.toFixed(1)}kg`;
+            const pigEl = document.getElementById('pig');
+            pigEl.classList.add('eating');
+            setTimeout(() => pigEl.classList.remove('eating'), 500);
+            if (state.weight >= 130 && !state.isGolden) log('🎉 猪已长成，可以出栏了！', 'good');
+            const msg = accuracy === 'perfect' ? `Perfect! ${feed.name}喂食成功！体重+${weightGain.toFixed(1)}kg` : accuracy === 'good' ? `Good! ${feed.name}喂食成功！体重+${weightGain.toFixed(1)}kg` : `${feed.name}喂食成功（时机欠佳）体重+${weightGain.toFixed(1)}kg`;
             log(msg, accuracy === 'perfect' ? 'perfect' : 'normal');
-            
             updateUI();
         }
-        
-        // 显示连击
-        function showCombo(text) {
-            const comboEl = document.getElementById('comboDisplay');
-            comboEl.textContent = text;
-            comboEl.classList.remove('show');
-            void comboEl.offsetWidth;
-            comboEl.classList.add('show');
-        }
-        
-        // 日志
-        function log(msg, type = 'normal') {
-            const logArea = document.getElementById('log');
-            const item = document.createElement('div');
-            item.className = 'log-item';
-            if (type === 'golden') item.className += ' log-golden';
-            if (type === 'dead') item.className += ' log-dead';
-            if (type === 'perfect') item.className += ' log-perfect';
-            item.textContent = msg;
-            logArea.appendChild(item);
-            logArea.scrollTop = logArea.scrollHeight;
-            
-            while (logArea.children.length > 5) {
-                logArea.removeChild(logArea.firstChild);
-            }
-        }
-        
-        // 显示结算
-        function showResult() {
-            isPlaying = false;
-            const modal = document.getElementById('resultModal');
-            
-            if (state.isDead) {
-                document.getElementById('resultTitle').textContent = '💀 猪死了';
-                document.getElementById('resultPig').textContent = '💀';
-                document.getElementById('resultPrice').textContent = '💰 0（投资打水漂）';
-            } else if (state.isGolden) {
-                document.getElementById('resultTitle').textContent = '🎉 黄金猪！';
-                document.getElementById('resultPig').textContent = '🐷✨';
-                document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice() + ' (黄金猪x5)';
-            } else {
-                document.getElementById('resultTitle').textContent = '🎉 出栏啦！';
-                document.getElementById('resultPig').textContent = getPigEmoji();
-                document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice();
-            }
-            
-            document.getElementById('resultWeight').textContent = state.weight.toFixed(1) + 'kg';
-            const tasteLevel = TASTE_LEVELS.slice().reverse().find(t => state.taste >= t.min);
-            document.getElementById('resultTaste').textContent = tasteLevel.name;
-            document.getElementById('resultWeeks').textContent = state.week + '周';
-            
-            modal.style.display = 'flex';
-        }
-        
-        // 重新开始
-        function restart() {
-            state = {
-                week: 1,
-                coins: 2000,
-                weight: 5,
-                taste: 0,
-                health: 100,
-                selectedFeed: 0,
-                combo: 0,
-                isGolden: false,
-                isDead: false
-            };
-            
-            // 清除所有音符
-            rhythmNotes.forEach(n => n.el.remove());
-            rhythmNotes = [];
-            
-            isPlaying = true;
-            document.getElementById('resultModal').style.display = 'none';
-            
-            // 重置日志
-            const logArea = document.getElementById('log');
-            logArea.innerHTML = '<div class="log-item">欢迎来到小猪养成记！选择饲料，把握节奏喂食吧~</div><div class="log-item">黑心饲料免费但可能变异，奢华饲料口感最佳！</div>';
-            
-            selectFeed(0);
-            updateUI();
-        }
-        
-        // 键盘支持
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                feed();
-            }
-        });
-        
-        // 启动
+        function showCombo(text) { const comboEl = document.getElementById('comboDisplay'); comboEl.textContent = text; comboEl.classList.remove('show'); void comboEl.offsetWidth; comboEl.classList.add('show'); }
+        function log(msg, type = 'normal') { const logArea = document.getElementById('log'); const item = document.createElement('div'); item.className = 'log-item'; if (type === 'golden') item.className += ' log-golden'; if (type === 'dead') item.className += ' log-dead'; if (type === 'perfect') item.className += ' log-perfect'; item.textContent = msg; logArea.appendChild(item); logArea.scrollTop = logArea.scrollHeight; while (logArea.children.length > 5) logArea.removeChild(logArea.firstChild); }
+        function showResult() { isPlaying = false; const modal = document.getElementById('resultModal'); if (state.isDead) { document.getElementById('resultTitle').textContent = '💀 猪死了'; document.getElementById('resultPig').textContent = '💀'; document.getElementById('resultPrice').textContent = '💰 0（投资打水漂）'; } else if (state.isGolden) { document.getElementById('resultTitle').textContent = '🎉 黄金猪！'; document.getElementById('resultPig').textContent = '🐷✨'; document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice() + ' (黄金猪x5)'; } else { document.getElementById('resultTitle').textContent = '🎉 出栏啦！'; document.getElementById('resultPig').textContent = getPigEmoji(); document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice(); } document.getElementById('resultWeight').textContent = state.weight.toFixed(1) + 'kg'; const tasteLevel = TASTE_LEVELS.slice().reverse().find(t => state.taste >= t.min); document.getElementById('resultTaste').textContent = tasteLevel.name; document.getElementById('resultWeeks').textContent = state.week + '周'; modal.style.display = 'flex'; }
+        function restart() { state = { week: 1, coins: 2000, weight: 5, taste: 0, health: 100, combo: 0, isGolden: false, isDead: false, lastStage: 0 }; tracks.forEach(track => { track.notes.forEach(n => n.el.remove()); track.notes = []; }); isPlaying = true; document.getElementById('resultModal').style.display = 'none'; const logArea = document.getElementById('log'); logArea.innerHTML = '<div class="log-item">点击饲料图标进行喂食！把握时机，在热区内点击得分更高~</div><div class="log-item">三种饲料以不同速度移动，黑心饲料免费但有风险！</div>'; updateUI(); }
         init();
     </script>
 </body>
