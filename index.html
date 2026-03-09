@@ -79,8 +79,7 @@
         }
         
         .pig-avatar {
-            width: 120px;
-            height: 120px;
+            font-size: 80px;
             animation: breathe 2s infinite;
             cursor: pointer;
             transition: transform 0.1s;
@@ -93,12 +92,6 @@
         @keyframes breathe {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
-        }
-        
-        /* 猪脸 SVG 样式 */
-        .pig-face {
-            width: 100%;
-            height: 100%;
         }
         
         /* 猪的信息 */
@@ -208,29 +201,7 @@
         <!-- 小猪区域 -->
         <div class="pig-section">
             <div class="pig-stage" id="stage">乳猪</div>
-            <div class="pig-avatar" id="pig">
-                <svg class="pig-face" viewBox="0 0 120 120" id="pigSvg">
-                    <!-- 猪脸背景 -->
-                    <circle cx="60" cy="60" r="55" fill="#FFB6C1" stroke="#FF69B4" stroke-width="3"/>
-                    <!-- 猪鼻子 -->
-                    <ellipse cx="60" cy="70" rx="25" ry="18" fill="#FF69B4"/>
-                    <circle cx="52" cy="70" r="5" fill="#8B4513"/>
-                    <circle cx="68" cy="70" r="5" fill="#8B4513"/>
-                    <!-- 眼睛 -->
-                    <circle cx="40" cy="45" r="8" fill="#333"/>
-                    <circle cx="42" cy="43" r="3" fill="#fff"/>
-                    <circle cx="80" cy="45" r="8" fill="#333"/>
-                    <circle cx="82" cy="43" r="3" fill="#fff"/>
-                    <!-- 耳朵 -->
-                    <ellipse cx="25" cy="30" rx="12" ry="18" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2" transform="rotate(-20 25 30)"/>
-                    <ellipse cx="95" cy="30" rx="12" ry="18" fill="#FFB6C1" stroke="#FF69B4" stroke-width="2" transform="rotate(20 95 30)"/>
-                    <!-- 腮红 -->
-                    <ellipse cx="25" cy="65" rx="10" ry="6" fill="#FF69B4" opacity="0.5"/>
-                    <ellipse cx="95" cy="65" rx="10" ry="6" fill="#FF69B4" opacity="0.5"/>
-                    <!-- 嘴巴 -->
-                    <path d="M 50 85 Q 60 92 70 85" stroke="#8B4513" stroke-width="2" fill="none"/>
-                </svg>
-            </div>
+            <div class="pig-avatar" id="pig">🐷</div>
             <div class="pig-info">
                 <span>⚖️ <span id="weight">5.0</span>kg</span>
                 <span>❤️ <span id="health">100</span>%</span>
@@ -276,13 +247,13 @@
             stage: 0 // 0:乳猪 1:小猪 2:中猪 3:大猪 4:肥猪
         };
         
-        // 猪的阶段配置 - 5个等级，使用不同颜色的猪脸
+        // 猪的阶段配置 - 使用真实的猪emoji，不是猪肉
         const stages = [
-            { name: '猪崽', color: '#FFE4E1', noseColor: '#FFB6C1', size: 0.7 },  // 浅粉色，小只
-            { name: '小猪', color: '#FFB6C1', noseColor: '#FF69B4', size: 0.85 }, // 粉红色，中等
-            { name: '中猪', color: '#FF69B4', noseColor: '#FF1493', size: 1.0 },  // 深粉色，标准
-            { name: '肥猪', color: '#FF1493', noseColor: '#C71585', size: 1.15 }, // 玫红色，肥硕
-            { name: '出栏', color: '#FFD700', noseColor: '#FFA500', size: 1.2 }   // 金黄色，可以卖
+            { name: '乳猪', emoji: '🐷', minWeight: 0, maxWeight: 20 },
+            { name: '小猪', emoji: '🐖', minWeight: 20, maxWeight: 50 },
+            { name: '中猪', emoji: '🐗', minWeight: 50, maxWeight: 100 },
+            { name: '大猪', emoji: '🐽', minWeight: 100, maxWeight: 150 },
+            { name: '肥猪', emoji: '🐷', minWeight: 150, maxWeight: 999 }
         ];
         
         // 更新显示
@@ -297,15 +268,7 @@
             // 更新阶段
             const stage = stages[state.stage];
             document.getElementById('stage').textContent = stage.name;
-            
-            // 更新猪脸颜色和大小
-            const pigSvg = document.getElementById('pigSvg');
-            const faceCircle = pigSvg.querySelector('circle');
-            const nose = pigSvg.querySelector('ellipse');
-            
-            faceCircle.setAttribute('fill', stage.color);
-            nose.setAttribute('fill', stage.noseColor);
-            pigSvg.style.transform = `scale(${stage.size})`;
+            document.getElementById('pig').textContent = stage.emoji;
         }
         
         // 添加日志
@@ -339,12 +302,9 @@
             log('喂食成功！小猪长胖了~');
             
             // 动画效果
-            const pigSvg = document.getElementById('pigSvg');
-            const currentScale = stages[state.stage].size;
-            pigSvg.style.transform = `scale(${currentScale * 1.15})`;
-            setTimeout(() => {
-                pigSvg.style.transform = `scale(${currentScale})`;
-            }, 200);
+            const pig = document.getElementById('pig');
+            pig.style.transform = 'scale(1.2)';
+            setTimeout(() => pig.style.transform = '', 200);
         }
         
         // 玩耍
@@ -364,10 +324,14 @@
         
         // 检查阶段升级
         function checkStage() {
-            const newStage = Math.min(4, Math.floor(state.weight / 45));
-            if (newStage > state.stage) {
-                state.stage = newStage;
-                log(`恭喜！小猪成长为${stages[newStage].name}了！`);
+            for (let i = stages.length - 1; i >= 0; i--) {
+                if (state.weight >= stages[i].minWeight) {
+                    if (state.stage !== i) {
+                        state.stage = i;
+                        log(`恭喜！小猪成长为${stages[i].name}了！`);
+                    }
+                    break;
+                }
             }
         }
         
