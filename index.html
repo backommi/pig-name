@@ -2,157 +2,114 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>小猪养成记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>小猪养成记 - 节奏版</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
         }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
         }
         
         .game-container {
             max-width: 480px;
             margin: 0 auto;
-            padding: 15px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
         }
         
-        /* 状态栏 */
+        /* 顶部状态栏 */
         .status-bar {
             display: flex;
             justify-content: space-between;
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 15px 20px;
+            border-radius: 12px;
+            padding: 10px 15px;
             margin-bottom: 10px;
+            font-size: 14px;
         }
         
         .status-item {
             display: flex;
             align-items: center;
             gap: 5px;
-        }
-        
-        .status-icon {
-            font-size: 20px;
-        }
-        
-        .status-text {
-            font-size: 16px;
             color: #fff;
-            font-weight: 500;
         }
         
-        .coins .status-text {
-            color: #FFD700;
+        .coins { color: #FFD700; font-weight: bold; font-size: 16px; }
+        
+        /* 属性面板 */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
         
-        .combo .status-text {
-            color: #FF6B6B;
-            animation: pulse 0.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* 成本条 */
-        .cost-bar {
-            background: rgba(231, 76, 60, 0.2);
-            border: 2px solid rgba(231, 76, 60, 0.4);
-            border-radius: 12px;
-            padding: 12px 20px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .cost-text {
-            font-size: 18px;
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        
-        .cost-detail {
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-        }
-        
-        /* 特殊状态 */
-        .special-status {
-            margin-bottom: 15px;
-        }
-        
-        .status-tag {
-            display: block;
+        .stat-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 8px;
             text-align: center;
-            padding: 12px;
-            border-radius: 25px;
+            color: #fff;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+        
+        .stat-value {
             font-size: 16px;
             font-weight: bold;
         }
         
-        .status-tag.lucky {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: #fff;
-        }
-        
-        .status-tag.escape {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            color: #fff;
-            animation: warningPulse 0.5s infinite;
-        }
-        
-        @keyframes warningPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        .taste-excellent { color: #FFD700; text-shadow: 0 0 10px #FFD700; }
+        .taste-good { color: #90EE90; }
+        .taste-normal { color: #FFF; }
+        .taste-bad { color: #FFA07A; }
+        .taste-terrible { color: #FF6B6B; }
         
         /* 小猪区域 */
         .pig-section {
+            flex: 1;
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 25px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .pig-container {
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
+            justify-content: center;
             position: relative;
+            margin-bottom: 10px;
         }
         
-        .pig-stage-badge {
+        .pig-stage {
             position: absolute;
-            top: 0;
-            right: 0;
+            top: 10px;
+            right: 15px;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: #fff;
-            padding: 6px 15px;
+            padding: 5px 15px;
             border-radius: 15px;
             font-size: 14px;
             font-weight: bold;
-        }
-        
-        .pig-avatar-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         
         .pig-avatar {
@@ -160,652 +117,270 @@
             animation: breathe 2s infinite;
             cursor: pointer;
             transition: transform 0.1s;
+            user-select: none;
         }
         
         .pig-avatar:active {
-            transform: scale(0.95);
+            transform: scale(0.9);
         }
         
-        .pig-avatar.feeding {
-            animation: shake 0.3s infinite;
-        }
-        
-        .pig-avatar.happy {
-            animation: happyJump 0.6s;
-        }
-        
-        .pig-avatar.sad {
-            animation: shake 0.5s;
-            filter: grayscale(0.5);
-        }
-        
-        .pig-avatar.angry {
-            animation: angryShake 0.3s 2;
-        }
-        
-        .pig-avatar.escape {
-            animation: escapeShake 0.3s infinite;
+        .pig-avatar.golden {
+            filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500);
+            animation: golden-glow 1s infinite alternate;
         }
         
         @keyframes breathe {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.02) translateY(-5px); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
         
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
+        @keyframes golden-glow {
+            from { filter: drop-shadow(0 0 20px #FFD700); }
+            to { filter: drop-shadow(0 0 40px #FFD700) drop-shadow(0 0 60px #FFA500); }
         }
         
-        @keyframes happyJump {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); }
+        .pig-avatar.dead {
+            filter: grayscale(100%) brightness(0.3);
+            animation: none;
         }
         
-        @keyframes angryShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        
-        @keyframes escapeShake {
-            0%, 100% { transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(-15px) rotate(-10deg); }
-            75% { transform: translateX(15px) rotate(10deg); }
-        }
-        
-        .pig-size-indicator {
-            margin-top: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #FFD700;
-            background: rgba(0,0,0,0.3);
-            padding: 5px 20px;
-            border-radius: 20px;
-        }
-        
-        .pig-shadow {
-            height: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 50%;
-            margin-top: 10px;
-            animation: shadowPulse 2s infinite;
-        }
-        
-        @keyframes shadowPulse {
-            0%, 100% { transform: scale(1); opacity: 0.2; }
-            50% { transform: scale(0.9); opacity: 0.15; }
-        }
-        
-        /* 喂食进度条 */
-        .feed-timing-bar {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* 节奏条 */
+        .rhythm-bar {
             width: 90%;
-        }
-        
-        .timing-track {
-            height: 50px;
+            height: 60px;
             background: rgba(0,0,0,0.3);
-            border-radius: 25px;
+            border-radius: 10px;
+            margin-top: 15px;
             position: relative;
             overflow: hidden;
         }
         
-        .timing-zones {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            z-index: 1;
+        .rhythm-track {
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
         
-        .zone {
+        .target-zone {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 50px;
+            background: rgba(255,255,255,0.3);
+            border: 3px solid #fff;
+            border-radius: 8px;
+        }
+        
+        .target-zone.perfect {
+            background: rgba(255,215,0,0.5);
+            border-color: #FFD700;
+            box-shadow: 0 0 20px #FFD700;
+        }
+        
+        .feed-note {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: rgba(255,255,255,0.6);
-            font-weight: bold;
-        }
-        
-        .zone.early { flex: 6; }
-        .zone.good { flex: 2; background: rgba(255,193,7,0.3); }
-        .zone.perfect { flex: 2; background: rgba(76,175,80,0.4); color: #fff; }
-        
-        .timing-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 25px;
-            transition: width 0.05s linear;
-        }
-        
-        .timing-hint {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFD700;
-            margin-top: 10px;
-            animation: pulse 0.5s infinite;
-        }
-        
-        /* 状态条 */
-        .stats-row {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .stat-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .stat-icon {
             font-size: 20px;
-            width: 30px;
+            transition: left 0.1s linear;
         }
         
-        .bar-bg {
-            flex: 1;
-            height: 16px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .bar-fill {
-            height: 100%;
-            border-radius: 8px;
-            transition: width 0.3s;
-        }
-        
-        .bar-fill.health {
-            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%);
-        }
-        
-        .bar-fill.happy {
-            background: linear-gradient(90deg, #feca57 0%, #ff9f43 100%);
-        }
-        
-        .stat-value {
-            font-size: 14px;
-            color: #fff;
-            font-weight: bold;
-            width: 50px;
-            text-align: right;
-        }
-        
-        /* 事件提示 */
-        .event-popup {
-            position: fixed;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-        
-        .event-popup.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        .event-emoji {
-            font-size: 40px;
-        }
-        
-        .event-text {
-            font-size: 18px;
-            color: #fff;
-            font-weight: 500;
-        }
-        
-        /* 成就提示 */
-        .achievement-popup {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-150px);
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 20px;
-            padding: 25px 35px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 200;
-            box-shadow: 0 10px 40px rgba(245, 87, 108, 0.4);
-        }
-        
-        .achievement-popup.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        .achievement-icon {
-            font-size: 50px;
-        }
-        
-        .achievement-title {
-            font-size: 16px;
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .achievement-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        .achievement-desc {
-            font-size: 14px;
-            color: rgba(255,255,255,0.9);
-        }
-        
-        /* 饲料选择 */
-        .feed-section {
-            margin-bottom: 20px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        
-        .feed-list {
+        /* 饲料选择区 */
+        .feed-selection {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
         
-        .feed-card {
-            border-radius: 20px;
-            padding: 20px 15px;
+        .feed-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 12px 5px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: transform 0.2s;
+            font-size: 12px;
+            color: #fff;
+            position: relative;
         }
         
-        .feed-card:active {
+        .feed-btn:active {
             transform: scale(0.95);
         }
         
-        .feed-card.disabled {
-            opacity: 0.4;
-            pointer-events: none;
+        .feed-btn.selected {
+            box-shadow: 0 0 0 3px #fff, 0 0 20px rgba(255,255,255,0.5);
         }
         
-        .feed-card.escape-warn {
-            animation: escapeWarn 0.5s infinite;
-        }
-        
-        @keyframes escapeWarn {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .feed-emoji {
-            font-size: 40px;
-        }
-        
-        .feed-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .feed-price {
-            font-size: 16px;
-            font-weight: bold;
-            color: #e74c3c;
-            background: rgba(255,255,255,0.6);
-            padding: 3px 10px;
-            border-radius: 10px;
-        }
-        
-        .feed-protein {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .feed-bonus {
-            font-size: 14px;
-            font-weight: bold;
-            color: #27ae60;
-            background: rgba(255,255,255,0.5);
-            padding: 3px 10px;
-            border-radius: 10px;
-        }
-        
-        /* 喂食提示 */
-        .feeding-hint {
-            text-align: center;
-            padding: 30px;
-        }
-        
-        .hint-text {
+        .feed-btn .emoji {
             font-size: 28px;
+        }
+        
+        .feed-btn .name {
+            font-size: 11px;
             font-weight: bold;
-            color: #FFD700;
-            display: block;
-            margin-bottom: 10px;
         }
         
-        .hint-sub {
-            font-size: 16px;
-            color: rgba(255,255,255,0.7);
+        .feed-btn .cost {
+            font-size: 10px;
+            opacity: 0.9;
         }
         
-        /* 操作按钮 */
-        .action-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+        .feed-black { background: linear-gradient(135deg, #2c3e50 0%, #4a4a4a 100%); }
+        .feed-normal { background: linear-gradient(135deg, #8e9eab 0%, #5c6b73 100%); }
+        .feed-advanced { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .feed-luxury { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         
-        .next-week-btn {
-            width: 80%;
-            padding: 20px;
+        /* 喂食按钮 */
+        .feed-action {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 35px;
-            border: 3px solid rgba(255,255,255,0.3);
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
             color: #fff;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.1s;
         }
         
-        .next-week-btn:active {
-            transform: scale(0.98);
+        .feed-action:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
-        .week-hint {
-            font-size: 14px;
-            color: rgba(255,255,255,0.6);
+        .feed-action.perfect {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            box-shadow: 0 0 30px #FFD700;
         }
         
-        /* 弹窗 */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-mask {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-        }
-        
-        .modal-content {
-            width: 90%;
-            max-width: 400px;
-            background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
-            border-radius: 30px;
-            padding: 30px 25px;
-            z-index: 1001;
-            animation: modalIn 0.4s;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-height: 90vh;
+        /* 日志 */
+        .log-area {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 12px;
+            height: 70px;
             overflow-y: auto;
         }
         
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8) translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+        .log-item {
+            margin-bottom: 3px;
+            opacity: 0.9;
         }
         
-        .modal-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        
-        .modal-emoji {
-            font-size: 60px;
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        .modal-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .rating-box {
-            text-align: center;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-        }
-        
-        .rating-stars {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 8px;
-        }
-        
-        .rating-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-        }
-        
-        /* 财务明细 */
-        .finance-summary {
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .finance-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        
-        .finance-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-        }
-        
-        .finance-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .finance-value {
-            font-size: 16px;
+        .log-item:last-child {
+            opacity: 1;
             font-weight: bold;
         }
         
-        .finance-value.positive { color: #27ae60; }
-        .finance-value.negative { color: #e74c3c; }
-        .finance-value.profit {
-            font-size: 24px;
-        }
+        .log-golden { color: #FFD700; text-shadow: 0 0 5px #FFD700; }
+        .log-dead { color: #FF6B6B; }
+        .log-perfect { color: #90EE90; }
         
-        .finance-divider {
-            height: 1px;
-            background: #ddd;
-            margin: 10px 0;
-        }
-        
-        .finance-item.highlight {
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 10px;
-            padding: 15px 10px;
-            margin-top: 5px;
-        }
-        
-        .result-stats {
-            margin-bottom: 20px;
-        }
-        
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        
-        .result-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .result-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        /* 成就展示 */
-        .achievements-section {
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .achievements-title {
-            font-size: 14px;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .achievements-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        /* 结算面板 */
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
             justify-content: center;
         }
         
-        .achievement-mini {
-            font-size: 28px;
-            background: rgba(102, 126, 234, 0.15);
-            padding: 8px;
-            border-radius: 10px;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: 15px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .action-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .action-btn.primary {
+        .result-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-        }
-        
-        .action-btn.secondary {
-            background: #f0f0f0;
-            color: #666;
-        }
-        
-        /* 分享按钮 */
-        .share-section {
-            margin-top: 20px;
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
+            color: #fff;
+            max-width: 350px;
+            width: 90%;
         }
         
-        .share-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #07c160 0%, #10b981 100%);
+        .result-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .result-pig {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .result-stats {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .result-price {
+            font-size: 32px;
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
             color: #fff;
-            border-radius: 25px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            border: none;
-            transition: transform 0.2s;
         }
         
-        .share-btn:active {
-            transform: scale(0.98);
+        /* 连击显示 */
+        .combo-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+            opacity: 0;
+            pointer-events: none;
         }
         
-        .share-url {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 8px;
-            font-size: 12px;
-            color: #666;
-            word-break: break-all;
+        .combo-display.show {
+            animation: combo-pop 0.5s ease-out;
+        }
+        
+        @keyframes combo-pop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
         }
     </style>
 </head>
@@ -814,179 +389,509 @@
         <!-- 状态栏 -->
         <div class="status-bar">
             <div class="status-item">
-                <span class="status-icon">📅</span>
-                <span class="status-text" id="weekText">第1周</span>
+                <span>📅</span>
+                <span id="week">第1周</span>
+            </div>
+            <div class="status-item">
+                <span>⚖️</span>
+                <span id="weight">5.0kg</span>
             </div>
             <div class="status-item coins">
-                <span class="status-icon">💰</span>
-                <span class="status-text" id="coinsText">2000</span>
-            </div>
-            <div class="status-item combo" id="comboBox" style="display:none">
-                <span class="status-icon">🔥</span>
-                <span class="status-text" id="comboText">x1</span>
+                <span>💰</span>
+                <span id="coins">2000</span>
             </div>
         </div>
-
-        <!-- 成本统计 -->
-        <div class="cost-bar">
-            <span class="cost-text">成本: <span id="totalCost">500</span>元</span>
-            <span class="cost-detail">(饲料<span id="feedCost">0</span> + 其他<span id="otherCost">500</span>)</span>
+        
+        <!-- 属性面板 -->
+        <div class="stats-panel">
+            <div class="stat-box">
+                <div class="stat-label">口感</div>
+                <div class="stat-value" id="taste">味同嚼蜡</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">健康</div>
+                <div class="stat-value" id="health">100%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">预计价格</div>
+                <div class="stat-value" id="price">500</div>
+            </div>
         </div>
-
-        <!-- 特殊状态 -->
-        <div class="special-status" id="luckyStatus" style="display:none">
-            <span class="status-tag lucky">🍀 幸运模式 - 下次双倍成长!</span>
-        </div>
-        <div class="special-status" id="escapeStatus" style="display:none">
-            <span class="status-tag escape">🏃 小猪要逃跑!用鱼粉挽留!</span>
-        </div>
-
-        <!-- 小猪展示区 -->
+        
+        <!-- 小猪区域 -->
         <div class="pig-section">
-            <div class="pig-container" id="pigContainer">
-                <span class="pig-stage-badge" id="stageBadge">乳猪</span>
-                <div class="pig-avatar-wrapper">
-                    <div class="pig-avatar" id="pigAvatar">🐷</div>
-                    <div class="pig-size-indicator" id="weightText">5.0kg</div>
-                </div>
-                <div class="pig-shadow" id="pigShadow" style="width:80px"></div>
-                
-                <!-- 喂食进度条 -->
-                <div class="feed-timing-bar" id="timingBar" style="display:none">
-                    <div class="timing-track">
-                        <div class="timing-zones">
-                            <div class="zone early">早</div>
-                            <div class="zone good">好</div>
-                            <div class="zone perfect">完美!</div>
-                        </div>
-                        <div class="timing-progress" id="timingProgress" style="width:0%"></div>
-                    </div>
-                    <div class="timing-hint">点击小猪喂食!</div>
-                </div>
-            </div>
+            <div class="pig-stage" id="stage">乳猪</div>
+            <div class="pig-avatar" id="pig">🐷</div>
+            <div class="combo-display" id="comboDisplay"></div>
             
-            <!-- 状态条 -->
-            <div class="stats-row">
-                <div class="stat-bar">
-                    <span class="stat-icon">❤️</span>
-                    <div class="bar-bg">
-                        <div class="bar-fill health" id="healthBar" style="width:100%"></div>
-                    </div>
-                    <span class="stat-value" id="healthText">100%</span>
-                </div>
-                <div class="stat-bar">
-                    <span class="stat-icon">😊</span>
-                    <div class="bar-bg">
-                        <div class="bar-fill happy" id="happyBar" style="width:80%"></div>
-                    </div>
-                    <span class="stat-value" id="happyText">80%</span>
+            <!-- 节奏条 -->
+            <div class="rhythm-bar">
+                <div class="rhythm-track" id="rhythmTrack">
+                    <div class="target-zone" id="targetZone"></div>
                 </div>
             </div>
         </div>
-
-        <!-- 事件提示 -->
-        <div class="event-popup" id="eventPopup">
-            <span class="event-emoji" id="eventEmoji">💩</span>
-            <span class="event-text" id="eventText">事件内容</span>
-        </div>
-
-        <!-- 成就提示 -->
-        <div class="achievement-popup" id="achievementPopup">
-            <span class="achievement-icon">🏆</span>
-            <div>
-                <div class="achievement-title">解锁成就</div>
-                <div class="achievement-name" id="achievementName">成就名称</div>
-                <div class="achievement-desc" id="achievementDesc">成就描述</div>
-            </div>
-        </div>
-
+        
         <!-- 饲料选择 -->
-        <div class="feed-section" id="feedSection">
-            <div class="section-title" id="feedTitle">选择饲料 (每次1kg)</div>
-            <div class="feed-list" id="feedList">
-                <!-- 动态生成 -->
-            </div>
+        <div class="feed-selection">
+            <button class="feed-btn feed-black selected" data-type="0" onclick="selectFeed(0)">
+                <span class="emoji">☠️</span>
+                <span class="name">黑心</span>
+                <span class="cost">(不明物体)</span>
+            </button>
+            <button class="feed-btn feed-normal" data-type="1" onclick="selectFeed(1)">
+                <span class="emoji">🗑️</span>
+                <span class="name">普通</span>
+                <span class="cost">(厨余)</span>
+            </button>
+            <button class="feed-btn feed-advanced" data-type="2" onclick="selectFeed(2)">
+                <span class="emoji">🌽</span>
+                <span class="name">高级</span>
+                <span class="cost">(玉米豆粕)</span>
+            </button>
+            <button class="feed-btn feed-luxury" data-type="3" onclick="selectFeed(3)">
+                <span class="emoji">🐟</span>
+                <span class="name">奢华</span>
+                <span class="cost">(鱼粉)</span>
+            </button>
         </div>
-
-        <!-- 喂食中提示 -->
-        <div class="feeding-hint" id="feedingHint" style="display:none">
-            <span class="hint-text">点击小猪完成喂食!</span>
-            <span class="hint-sub">在"完美"区域点击获得连击!</span>
+        
+        <!-- 喂食按钮 -->
+        <button class="feed-action" id="feedBtn" onclick="feed()">🍽️ 喂食</button>
+        
+        <!-- 日志 -->
+        <div class="log-area" id="log">
+            <div class="log-item">欢迎来到小猪养成记！选择饲料，把握节奏喂食吧~</div>
+            <div class="log-item">黑心饲料免费但可能变异，奢华饲料口感最佳！</div>
         </div>
-
-        <!-- 下一周按钮 -->
-        <div class="action-section" id="actionSection">
-            <button class="next-week-btn" id="nextWeekBtn">⏭️ 进入第2周</button>
-            <span class="week-hint">每周自动成长 + 维护费50元</span>
-        </div>
-
-        <!-- 游戏结束弹窗 -->
-        <div class="modal" id="gameOverModal" style="display:none">
-            <div class="modal-mask"></div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="modal-emoji">🏆</span>
-                    <div class="modal-title">出栏结算</div>
+    </div>
+    
+    <!-- 结算面板 -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <div class="result-title" id="resultTitle">出栏啦！</div>
+            <div class="result-pig" id="resultPig">🐷</div>
+            <div class="result-stats">
+                <div class="result-stat">
+                    <span>最终体重</span>
+                    <span id="resultWeight">120kg</span>
                 </div>
-                
-                <div class="rating-box">
-                    <span class="rating-stars" id="ratingStars">⭐⭐⭐⭐⭐</span>
-                    <div class="rating-title" id="ratingTitle">猪王</div>
+                <div class="result-stat">
+                    <span>肉质口感</span>
+                    <span id="resultTaste">鲜美多汁</span>
                 </div>
-                
-                <div class="finance-summary">
-                    <div class="finance-title">💰 财务明细</div>
-                    <div class="finance-item">
-                        <span class="finance-label">出售价格</span>
-                        <span class="finance-value positive">+<span id="finalPrice">0</span>元</span>
-                    </div>
-                    <div class="finance-item">
-                        <span class="finance-label">饲料成本</span>
-                        <span class="finance-value negative">-<span id="finalFeedCost">0</span>元</span>
-                    </div>
-                    <div class="finance-item">
-                        <span class="finance-label">其他成本</span>
-                        <span class="finance-value negative">-<span id="finalOtherCost">0</span>元</span>
-                    </div>
-                    <div class="finance-divider"></div>
-                    <div class="finance-item highlight">
-                        <span class="finance-label">净利润</span>
-                        <span class="finance-value profit" id="profitText">+0元</span>
-                    </div>
-                </div>
-                
-                <div class="result-stats">
-                    <div class="result-item">
-                        <span class="result-label">最终体重</span>
-                        <span class="result-value" id="finalWeight">0kg</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">最高连击</span>
-                        <span class="result-value" id="finalCombo">x0</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">完美喂食</span>
-                        <span class="result-value" id="finalPerfect">0次</span>
-                    </div>
-                </div>
-                
-                <div class="achievements-section" id="achievementsSection" style="display:none">
-                    <div class="achievements-title">本局成就</div>
-                    <div class="achievements-list" id="achievementsList"></div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="action-btn primary" id="restartBtn">再养一只</button>
-                    <button class="action-btn secondary" id="shareBtn">分享游戏</button>
-                </div>
-                
-                <div class="share-section" id="shareSection" style="display:none">
-                    <div class="share-url" id="shareUrl"></div>
+                <div class="result-stat">
+                    <span>饲养周期</span>
+                    <span id="resultWeeks">20周</span>
                 </div>
             </div>
+            <div class="result-price" id="resultPrice">💰 8888</div>
+            <button class="restart-btn" onclick="restart()">再养一头</button>
         </div>
     </div>
 
-    <script src="game.js"></script>
+    <script>
+        // 饲料配置
+        const FEEDS = [
+            { 
+                name: '黑心', 
+                emoji: '☠️', 
+                cost: 0, 
+                weightGain: 1, 
+                tasteGain: -5, 
+                desc: '不明物体',
+                color: '#2c3e50'
+            },
+            { 
+                name: '普通', 
+                emoji: '🗑️', 
+                cost: 20, 
+                weightGain: 2, 
+                tasteGain: 0, 
+                desc: '厨余垃圾',
+                color: '#5c6b73'
+            },
+            { 
+                name: '高级', 
+                emoji: '🌽', 
+                cost: 50, 
+                weightGain: 3, 
+                tasteGain: 3, 
+                desc: '玉米豆粕',
+                color: '#11998e'
+            },
+            { 
+                name: '奢华', 
+                emoji: '🐟', 
+                cost: 100, 
+                weightGain: 4, 
+                tasteGain: 6, 
+                desc: '鱼粉',
+                color: '#f093fb'
+            }
+        ];
+        
+        // 口感等级
+        const TASTE_LEVELS = [
+            { min: -100, name: '味同嚼蜡', class: 'taste-terrible' },
+            { min: -20, name: '难以下咽', class: 'taste-bad' },
+            { min: 0, name: '普普通通', class: 'taste-normal' },
+            { min: 20, name: '鲜嫩可口', class: 'taste-good' },
+            { min: 50, name: '肉质爽滑', class: 'taste-excellent' },
+            { min: 80, name: '入口即化', class: 'taste-excellent' }
+        ];
+        
+        // 游戏状态
+        let state = {
+            week: 1,
+            coins: 2000,
+            weight: 5,
+            taste: 0,
+            health: 100,
+            selectedFeed: 0,
+            combo: 0,
+            isGolden: false,
+            isDead: false
+        };
+        
+        // 节奏系统
+        let rhythmNotes = [];
+        let rhythmSpeed = 2;
+        let isPlaying = true;
+        
+        // 初始化
+        function init() {
+            startRhythm();
+            updateUI();
+        }
+        
+        // 选择饲料
+        function selectFeed(type) {
+            if (state.isDead || state.isGolden) return;
+            state.selectedFeed = type;
+            document.querySelectorAll('.feed-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelector(`.feed-btn[data-type="${type}"]`).classList.add('selected');
+        }
+        
+        // 更新UI
+        function updateUI() {
+            document.getElementById('week').textContent = `第${state.week}周`;
+            document.getElementById('weight').textContent = `${state.weight.toFixed(1)}kg`;
+            document.getElementById('coins').textContent = state.coins;
+            document.getElementById('health').textContent = `${state.health}%`;
+            
+            // 口感
+            const tasteLevel = TASTE_LEVELS.slice().reverse().find(t => state.taste >= t.min);
+            const tasteEl = document.getElementById('taste');
+            tasteEl.textContent = tasteLevel.name;
+            tasteEl.className = 'stat-value ' + tasteLevel.class;
+            
+            // 预计价格
+            const price = calculatePrice();
+            document.getElementById('price').textContent = price;
+            
+            // 猪的状态
+            const pigEl = document.getElementById('pig');
+            if (state.isDead) {
+                pigEl.textContent = '💀';
+                pigEl.className = 'pig-avatar dead';
+            } else if (state.isGolden) {
+                pigEl.textContent = '🐷';
+                pigEl.className = 'pig-avatar golden';
+            } else {
+                pigEl.textContent = getPigEmoji();
+                pigEl.className = 'pig-avatar';
+            }
+            
+            // 阶段
+            document.getElementById('stage').textContent = getStageName();
+        }
+        
+        // 获取猪emoji
+        function getPigEmoji() {
+            if (state.weight < 15) return '🐷';
+            if (state.weight < 30) return '🐽';
+            if (state.weight < 60) return '🐖';
+            if (state.weight < 90) return '🐗';
+            if (state.weight < 110) return '🥓';
+            return '🍖';
+        }
+        
+        // 获取阶段名
+        function getStageName() {
+            if (state.weight < 15) return '乳猪';
+            if (state.weight < 30) return '幼猪';
+            if (state.weight < 60) return '小猪';
+            if (state.weight < 90) return '中猪';
+            if (state.weight < 110) return '大猪';
+            if (state.weight < 130) return '肥猪';
+            return '出栏猪';
+        }
+        
+        // 计算价格
+        function calculatePrice() {
+            if (state.isDead) return 0;
+            let basePrice = state.weight * 10;
+            let tasteBonus = Math.max(0, state.taste * 2);
+            let goldenBonus = state.isGolden ? 5 : 1;
+            return Math.floor((basePrice + tasteBonus) * goldenBonus);
+        }
+        
+        // 节奏系统
+        function startRhythm() {
+            setInterval(() => {
+                if (!isPlaying || state.isDead) return;
+                spawnNote();
+            }, 1500);
+            
+            setInterval(() => {
+                if (!isPlaying) return;
+                updateNotes();
+            }, 16);
+        }
+        
+        // 生成音符
+        function spawnNote() {
+            const track = document.getElementById('rhythmTrack');
+            const note = document.createElement('div');
+            note.className = 'feed-note';
+            note.style.left = '100%';
+            note.style.background = FEEDS[state.selectedFeed].color;
+            note.textContent = FEEDS[state.selectedFeed].emoji;
+            track.appendChild(note);
+            rhythmNotes.push({ el: note, x: 100 });
+        }
+        
+        // 更新音符位置
+        function updateNotes() {
+            const targetX = 50; // 目标区域中心百分比
+            
+            rhythmNotes = rhythmNotes.filter(note => {
+                note.x -= rhythmSpeed;
+                note.el.style.left = note.x + '%';
+                
+                if (note.x < -10) {
+                    note.el.remove();
+                    state.combo = 0;
+                    return false;
+                }
+                return true;
+            });
+        }
+        
+        // 喂食
+        function feed() {
+            if (state.isDead) {
+                log('猪已经死了，请重新开始', 'dead');
+                return;
+            }
+            
+            if (state.weight >= 130) {
+                showResult();
+                return;
+            }
+            
+            const feed = FEEDS[state.selectedFeed];
+            
+            // 检查金币
+            if (state.coins < feed.cost) {
+                log('金币不足！', 'bad');
+                return;
+            }
+            
+            // 检查节奏
+            const targetX = 50;
+            let hitNote = null;
+            let bestDiff = 100;
+            
+            rhythmNotes.forEach(note => {
+                const diff = Math.abs(note.x - targetX);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    hitNote = note;
+                }
+            });
+            
+            if (bestDiff > 15) {
+                log('时机不对！饲料浪费了', 'bad');
+                state.coins -= feed.cost;
+                state.combo = 0;
+                updateUI();
+                return;
+            }
+            
+            // 成功喂食
+            state.coins -= feed.cost;
+            
+            // 计算准确度
+            let accuracy = 'good';
+            if (bestDiff < 5) {
+                accuracy = 'perfect';
+                state.combo++;
+            } else {
+                state.combo = 0;
+            }
+            
+            // 移除音符
+            if (hitNote) {
+                hitNote.el.remove();
+                rhythmNotes = rhythmNotes.filter(n => n !== hitNote);
+            }
+            
+            // 黑心饲料特殊效果
+            if (state.selectedFeed === 0) {
+                const rand = Math.random();
+                if (rand < 0.05) {
+                    // 5% 概率变异成黄金猪
+                    state.isGolden = true;
+                    state.weight = 200;
+                    state.taste = 100;
+                    log('🎉 基因变异！黄金猪诞生！价值翻倍！', 'golden');
+                    showCombo('黄金猪！');
+                    updateUI();
+                    setTimeout(() => showResult(), 1000);
+                    return;
+                } else if (rand < 0.15) {
+                    // 10% 概率死亡
+                    state.isDead = true;
+                    log('💀 猪吃了不明物体，毒发身亡...投资打水漂', 'dead');
+                    updateUI();
+                    setTimeout(() => showResult(), 1000);
+                    return;
+                }
+            }
+            
+            // 正常喂食效果
+            let weightGain = feed.weightGain;
+            let tasteGain = feed.tasteGain;
+            
+            if (accuracy === 'perfect') {
+                weightGain *= 1.5;
+                tasteGain *= 1.5;
+                showCombo('Perfect!');
+            }
+            
+            // 连击加成
+            if (state.combo > 5) {
+                weightGain *= (1 + state.combo * 0.05);
+                tasteGain *= (1 + state.combo * 0.05);
+            }
+            
+            state.weight += weightGain;
+            state.taste += tasteGain;
+            state.health = Math.min(100, state.health + 2);
+            
+            // 每周推进
+            state.week++;
+            
+            // 自然消耗
+            state.taste -= 0.5;
+            
+            // 检查出栏
+            if (state.weight >= 130 && !state.isGolden) {
+                log('🎉 猪已长成，可以出栏了！', 'good');
+            }
+            
+            const msg = accuracy === 'perfect' 
+                ? `Perfect! 喂食成功！体重+${weightGain.toFixed(1)}kg` 
+                : `喂食成功！体重+${weightGain.toFixed(1)}kg`;
+            log(msg, accuracy === 'perfect' ? 'perfect' : 'normal');
+            
+            updateUI();
+        }
+        
+        // 显示连击
+        function showCombo(text) {
+            const comboEl = document.getElementById('comboDisplay');
+            comboEl.textContent = text;
+            comboEl.classList.remove('show');
+            void comboEl.offsetWidth;
+            comboEl.classList.add('show');
+        }
+        
+        // 日志
+        function log(msg, type = 'normal') {
+            const logArea = document.getElementById('log');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            if (type === 'golden') item.className += ' log-golden';
+            if (type === 'dead') item.className += ' log-dead';
+            if (type === 'perfect') item.className += ' log-perfect';
+            item.textContent = msg;
+            logArea.appendChild(item);
+            logArea.scrollTop = logArea.scrollHeight;
+            
+            while (logArea.children.length > 5) {
+                logArea.removeChild(logArea.firstChild);
+            }
+        }
+        
+        // 显示结算
+        function showResult() {
+            isPlaying = false;
+            const modal = document.getElementById('resultModal');
+            
+            if (state.isDead) {
+                document.getElementById('resultTitle').textContent = '💀 猪死了';
+                document.getElementById('resultPig').textContent = '💀';
+                document.getElementById('resultPrice').textContent = '💰 0（投资打水漂）';
+            } else if (state.isGolden) {
+                document.getElementById('resultTitle').textContent = '🎉 黄金猪！';
+                document.getElementById('resultPig').textContent = '🐷✨';
+                document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice() + ' (黄金猪x5)';
+            } else {
+                document.getElementById('resultTitle').textContent = '🎉 出栏啦！';
+                document.getElementById('resultPig').textContent = getPigEmoji();
+                document.getElementById('resultPrice').textContent = '💰 ' + calculatePrice();
+            }
+            
+            document.getElementById('resultWeight').textContent = state.weight.toFixed(1) + 'kg';
+            const tasteLevel = TASTE_LEVELS.slice().reverse().find(t => state.taste >= t.min);
+            document.getElementById('resultTaste').textContent = tasteLevel.name;
+            document.getElementById('resultWeeks').textContent = state.week + '周';
+            
+            modal.style.display = 'flex';
+        }
+        
+        // 重新开始
+        function restart() {
+            state = {
+                week: 1,
+                coins: 2000,
+                weight: 5,
+                taste: 0,
+                health: 100,
+                selectedFeed: 0,
+                combo: 0,
+                isGolden: false,
+                isDead: false
+            };
+            
+            // 清除所有音符
+            rhythmNotes.forEach(n => n.el.remove());
+            rhythmNotes = [];
+            
+            isPlaying = true;
+            document.getElementById('resultModal').style.display = 'none';
+            
+            // 重置日志
+            const logArea = document.getElementById('log');
+            logArea.innerHTML = '<div class="log-item">欢迎来到小猪养成记！选择饲料，把握节奏喂食吧~</div><div class="log-item">黑心饲料免费但可能变异，奢华饲料口感最佳！</div>';
+            
+            selectFeed(0);
+            updateUI();
+        }
+        
+        // 键盘支持
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                feed();
+            }
+        });
+        
+        // 启动
+        init();
+    </script>
 </body>
 </html>
